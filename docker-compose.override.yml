@@ -1,0 +1,26 @@
+version: '3'
+services:
+  ansible:
+    environment:
+      ANSIBLE_HOST_KEY_CHECKING: 'false'
+    links:
+      - nginx1
+      - nginx2
+      - node1
+      - node2
+  node1:
+    build: ./dockerfiles/ubuntu_ssh
+    ports:
+      - "22"
+  node2:
+    build: ./dockerfiles/ubuntu_ssh
+    ports:
+      - "22"
+  nginx1:
+    build: ./dockerfiles/ubuntu_ssh
+    ports:
+      - "22"
+  nginx2:
+    build: ./dockerfiles/ubuntu_ssh
+    ports:
+      - "22"

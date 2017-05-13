@@ -1,0 +1,10 @@
+version: '3'
+services:
+  ansible:
+    image: williamyeh/ansible:ubuntu16.04
+    environment:
+      ANSIBLE_INVENTORY: /data/hosts
+    volumes:
+      - ./data/ansible:/data
+      - ./data/ansible/ssh:/root/.ssh
+    command: /bin/bash -c "eval `ssh-agent -s`; ssh-agent bash; ssh-add ~/.ssh/id_rsa; ansible all -m ping"
