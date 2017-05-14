@@ -7,4 +7,4 @@ services:
     volumes:
       - ./data/ansible:/data
       - ./data/ansible/ssh:/root/.ssh
-    command: /bin/bash -c "eval `ssh-agent -s`; ssh-agent bash; ssh-add ~/.ssh/id_rsa; ansible all -m ping"
+    command: /bin/bash -c "eval `ssh-agent -s`; ssh-agent bash; ssh-add ~/.ssh/id_rsa; ansible all -m ping; ansible-playbook /data/playbook.yml -f 10"

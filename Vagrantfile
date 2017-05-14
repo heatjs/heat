@@ -93,8 +93,26 @@ Vagrant.configure("2") do |config|
 
   config.vm.provision :shell, path: "scripts/vagrant_setup.sh"
 
-  config.vm.define "external_test" do |external_test|
-    # nginx1.vm.box = "ubuntu/xenial64"
-    external_test.vm.network "private_network", ip: "192.168.50.4"
+  config.vm.define "nginx1" do |nginx1|
+    nginx1.vm.network "private_network", ip: "192.168.50.3"
+  end
+
+  config.vm.define "nginx2" do |nginx2|
+    nginx2.vm.network "private_network", ip: "192.168.50.4"
+  end
+
+  config.vm.define "redis1" do |redis1|
+    redis1.vm.network "private_network", ip: "192.168.50.5"
+  end
+  config.vm.define "redis2" do |redis2|
+    redis2.vm.network "private_network", ip: "192.168.50.6"
+  end
+
+  config.vm.define "node1" do |node1|
+    node1.vm.network "private_network", ip: "192.168.50.7"
+  end
+
+  config.vm.define "node2" do |node2|
+    node2.vm.network "private_network", ip: "192.168.50.8"
   end
 end

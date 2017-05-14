@@ -1,5 +1,11 @@
-node1
-node2
-nginx1
-nginx2
+[nginx]
+192.168.50.3 master=true
 192.168.50.4
+
+[redis]
+192.168.50.5 master=true
+192.168.50.6
+
+[nodes]
+192.168.50.7
+192.168.50.8
