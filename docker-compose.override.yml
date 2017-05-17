@@ -1,5 +1,9 @@
 version: '3'
 services:
-  ansible:
+  nginx:
+    ports:
+      - "9229:9229"
+  console:
     environment:
       ANSIBLE_HOST_KEY_CHECKING: 'false'
+      NODE_ENV: development

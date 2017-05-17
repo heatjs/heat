@@ -1,3 +1,7 @@
+# SSL Folder
+data/ssl/*
+!data/ssl/.gitkeep
+
 # Vagrant
 .vagrant
 

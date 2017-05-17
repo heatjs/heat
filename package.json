@@ -1,0 +1,24 @@
+{
+  "name": "heat",
+  "version": "1.0.0",
+  "description": "Cluster management",
+  "main": "main.js",
+  "scripts": {
+    "start": "node main.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/heatjs/heat.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/heatjs/heat/issues"
+  },
+  "homepage": "https://github.com/heatjs/heat#readme",
+  "dependencies": {
+    "express": "^4.15.2",
+    "faye": "^1.2.4"
+  }
+}

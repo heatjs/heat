@@ -1,10 +1,24 @@
 version: '3'
 services:
-  ansible:
-    image: williamyeh/ansible:ubuntu16.04
+  nginx:
+    image: nginx:1.13.0
+    command: /bin/bash -c "envsubst '${API_LOCATION},${UI_LOCATION}' < /etc/nginx/conf.d/mysite.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
+    restart: always
+    volumes:
+      - ./data:/data
+      - ./data/nginx.conf:/etc/nginx/conf.d/mysite.template
+    links:
+      - console
+    ports:
+      - "80:80"
+      - "443:443"
+  console:
+    build: ./dockerfiles/console
     environment:
       ANSIBLE_INVENTORY: /data/hosts
     volumes:
-      - ./data/ansible:/data
-      - ./data/ansible/ssh:/root/.ssh
-    command: /bin/bash -c "eval `ssh-agent -s`; ssh-agent bash; ssh-add ~/.ssh/id_rsa; ansible all -m ping; ansible-playbook /data/playbook.yml -f 10"
+      - .:/opt/app
+      - ./data/:/data
+      - ./data/ssh:/root/.ssh
+    restart: always
+    # command: /bin/bash -c "eval `ssh-agent -s`; ssh-agent bash; ssh-add ~/.ssh/id_rsa; ansible all -m ping; ansible-playbook /data/playbook.yml -f 10"

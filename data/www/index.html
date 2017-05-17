@@ -1,0 +1,19 @@
+<html>
+  <head>
+    <title>Test</title>
+    <script src="/api/faye/client.js"></script>
+    <script>
+      var client = new Faye.Client('/api/faye');
+      client.publish('/main', { text: 'hello' })
+      client.subscribe('/main', function(message) {
+        console.log(message.text)
+      })
+      client.subscribe('/fromServer', function(message) {
+        console.log(message)
+      })
+    </script>
+  </head>
+  <body>
+    <h1>Hello World</h1>
+  </body>
+</html>
