@@ -1,5 +1,20 @@
+volumes:
+  redis-volume:
+    driver: local-persist
+    driver_opts:
+      mountpoint: ./data/redis
+
 version: '3'
 services:
+  redis:
+    image: redis:3.2.9
+    command: redis-server --appendonly yes
+    restart: always
+    sysctls:
+      # Required for some kernels
+      - net.core.somaxconn=511
+    volumes:
+      - redis-volume:/data
   nginx:
     image: nginx:1.13.0
     command: /bin/bash -c "envsubst '${API_LOCATION},${UI_LOCATION}' < /etc/nginx/conf.d/mysite.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
@@ -16,6 +31,8 @@ services:
     build: ./dockerfiles/console
     environment:
       ANSIBLE_INVENTORY: /data/hosts
+    links:
+      - redis
     volumes:
       - .:/opt/app
       - ./data/:/data

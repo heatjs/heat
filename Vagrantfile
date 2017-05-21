@@ -84,15 +84,21 @@ Vagrant.configure("2") do |config|
   end
 
   config.vm.provision "shell" do |s|
-    ssh_pub_key = File.readlines("./data/ansible/ssh/id_rsa.pub").first.strip
+    ssh_pub_key = File.readlines("./data/ssh/id_rsa.pub").first.strip
     s.inline = <<-SHELL
       # echo #{ssh_pub_key} >> /home/vagrant/.ssh/authorized_keys
       echo #{ssh_pub_key} >> /root/.ssh/authorized_keys
     SHELL
   end
 
-  config.vm.provision :shell, path: "scripts/vagrant_setup.sh"
+  # config.vm.provision :shell, path: "scripts/vagrant_setup.sh"
 
+  config.vm.define "console" do |console|
+    console.vm.network "private_network", ip: "192.168.50.2"
+    console.vm.provision :shell, inline: "/vagrant/resources/scripts/installers/console.sh"
+  end
+
+=begin
   config.vm.define "nginx1" do |nginx1|
     nginx1.vm.network "private_network", ip: "192.168.50.3"
   end
@@ -115,4 +121,5 @@ Vagrant.configure("2") do |config|
   config.vm.define "node2" do |node2|
     node2.vm.network "private_network", ip: "192.168.50.8"
   end
+=end
 end
