@@ -7,3 +7,4 @@ services:
     environment:
       ANSIBLE_HOST_KEY_CHECKING: 'false'
       NODE_ENV: development
+      DEBUG_PORT: 9229
