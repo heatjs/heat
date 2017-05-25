@@ -1,24 +1,45 @@
 #!/bin/bash
 
+# Source of tarball: https://github.com/ansible/ansible/releases
+
 # Several settings
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >>/dev/null && pwd )"
-TMP_DIR="${DIR}/tmp"
-VERSION=2.3.0.0-1
-ANSIBLE_FOLDER="ansible-${VERSION}"
-SOURCE_CMD="source /opt/ansible/hacking/env-setup &>/dev/null"
+TMP_DIR="${DIR}/tmp/"
+SCRIPT_VERSION=2
+ANSIBLE_VERSION=2.3.0.0-1
+VERSION="${ANSIBLE_VERSION}-###${SCRIPT_VERSION}###"
+INSTALL_PATH="/opt/ansible/"
+VERSION_FILE="${INSTALL_PATH}VERSION"
+ANSIBLE_FOLDER="ansible-${ANSIBLE_VERSION}"
+SOURCE_CMD="source ${INSTALL_PATH}hacking/env-setup &>/dev/null"
+
+if [ -d $INSTALL_PATH ]; then
+  if [ -f $VERSION_FILE ]; then
+    if grep -Fxq $VERSION "$VERSION_FILE"; then
+      echo "Already current version"
+      exit
+    else
+      echo "Upgrading"
+    fi
+  else
+    echo "Upgrading"
+  fi
+else
+  echo "Installing"
+fi
 
 # Remove old versions
 rm -f /usr/local/bin/ansible*
-rm -rf "/opt/ansible"
+rm -rf $INSTALL_PATH
 
 # Install new
 mkdir -p $TMP_DIR
 mkdir -p /etc/ansible
 tar -xzf "${DIR}/${ANSIBLE_FOLDER}.tar.gz" -C $TMP_DIR
-mv "${TMP_DIR}/${ANSIBLE_FOLDER}" "/opt"
-mv "/opt/${ANSIBLE_FOLDER}" "/opt/ansible"
+mv "${TMP_DIR}${ANSIBLE_FOLDER}" "/opt"
+mv "/opt/${ANSIBLE_FOLDER}" $INSTALL_PATH
 
-echo "127.0.0.1" > /etc/ansible/hosts
+cp -pr ${DIR}/config/* "/etc/ansible"
 
 # Install requirements
 apt-get update
@@ -29,19 +50,22 @@ apt-get install build-essential -y
 apt-get install python-setuptools -y
 apt-get install libssl-dev libpq-dev libxml2-dev libxslt1-dev libldap2-dev libsasl2-dev libffi-dev -y
 easy_install pip
-pip install -r /opt/ansible/requirements.txt
+pip install -r "${INSTALL_PATH}requirements.txt"
 
 # Add environment setup
 grep -q -F "$SOURCE_CMD" /etc/profile || echo "$SOURCE_CMD" >> /etc/profile
 
 # New symlinks
-ln -s /opt/ansible/bin/ansible /usr/local/bin/ansible
-ln -s /opt/ansible/bin/ansible-connection /usr/local/bin/ansible-connection
-ln -s /opt/ansible/bin/ansible-console /usr/local/bin/ansible-console
-ln -s /opt/ansible/bin/ansible-doc /usr/local/bin/ansible-doc
-ln -s /opt/ansible/bin/ansible-galaxy /usr/local/bin/ansible-galaxy
-ln -s /opt/ansible/bin/ansible-playbook /usr/local/bin/ansible-playbook
-ln -s /opt/ansible/bin/ansible-pull /usr/local/bin/ansible-pull
+ln -s "${INSTALL_PATH}bin/ansible" /usr/local/bin/ansible
+ln -s "${INSTALL_PATH}bin/ansible-connection" /usr/local/bin/ansible-connection
+ln -s "${INSTALL_PATH}bin/ansible-console" /usr/local/bin/ansible-console
+ln -s "${INSTALL_PATH}bin/ansible-doc" /usr/local/bin/ansible-doc
+ln -s "${INSTALL_PATH}bin/ansible-galaxy" /usr/local/bin/ansible-galaxy
+ln -s "${INSTALL_PATH}bin/ansible-playbook" /usr/local/bin/ansible-playbook
+ln -s "${INSTALL_PATH}bin/ansible-pull" /usr/local/bin/ansible-pull
 
 # Clean up
 rmdir $TMP_DIR
+
+# Add version file
+echo "${VERSION}" >> "${VERSION_FILE}"

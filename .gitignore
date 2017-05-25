@@ -1,3 +1,5 @@
+scripts/installers/ansible/ansible-*.tar.gz
+
 # SSL Folder
 data/ssl/*
 
