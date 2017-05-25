@@ -3,6 +3,8 @@ Cluster management
 
 ## Requirements
 ### Main (Management)
+- Download Ansible `wget https://github.com/ansible/ansible/archive/v2.3.0.0-1.tar.gz scripts/installers/ansible/ansible-2.3.0.0-1.tar.gz`
+    - (It can't be directly included in this package because of its license...)
 - Internet connection
 - [Docker (Tested with 17.03)](https://www.docker.com/)
 - [Docker Compose](https://docs.docker.com/compose/install/)
@@ -17,6 +19,7 @@ Following soon...
 There is a development environment defined in `docker-compose.override.yml`
 
 # Notes
+- Hint: sudo -i to run ansible
 - Add custom debug iframe in console
 - dev domains using [xip](xip.io)
 - Firewall: ufw and fail2ban?
