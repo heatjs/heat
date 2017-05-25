@@ -3,7 +3,7 @@ Cluster management
 
 ## Requirements
 ### Main (Management)
-- Download Ansible `curl -o resources/scripts/installers/ansible/ansible-2.3.0.0-1.tar.gz https://github.com/ansible/ansible/archive/v2.3.0.0-1.tar.gz`
+- Download Ansible `curl -L -o resources/scripts/installers/ansible/ansible-2.3.0.0-1.tar.gz https://github.com/ansible/ansible/archive/v2.3.0.0-1.tar.gz`
     - (It can't be directly included in this package because of its license...)
 - Internet connection
 - [Docker (Tested with 17.03)](https://www.docker.com/)
