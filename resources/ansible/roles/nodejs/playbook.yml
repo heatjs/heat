@@ -1,0 +1,44 @@
+# Source of tarball: https://nodejs.org/en/download/current/
+---
+- hosts: nodejs
+  vars:
+    install_path: "/opt/nodejs/"
+    playbook_version: 1
+    pkg_version: 7.10.0
+    version: "{{pkg_version}}-###{{playbook_version}}###"
+    version_file: "{{install_path}}VERSION"
+    pkg_file: "node-v{{pkg_version}}-linux-x64.tar.xz"
+    pkg_file_tmp_dest: "/tmp/{{pkg_file}}"
+  tasks:
+    - name: "Check if already installed"
+      stat:
+        path: "{{install_path}}"
+      register: installed
+    - name: "Check if version is the same"
+      command: grep -Fxq "{{version}}" {{version_file}}
+      register: version_correct
+      check_mode: "no"
+      changed_when: false
+      failed_when: false
+    - debug: msg="{{ installed.stat.exists }}"
+    - debug: msg="{{ version_correct.rc }}"
+    - block:
+        - name: "Removing old version"
+          file:
+            state: absent
+            path: "{{install_path}}"
+      when: installed.stat.exists == true and version_correct.rc == 1
+    - block:
+        - name: "The file name is:"
+          command: "echo {{ pkg_file }}"
+          register: "result"
+        - debug: msg="{{ result.stdout }}"
+        - name: "Copy NodeJS package to server"
+          copy:
+            src: "./{{pkg_file}}"
+            dest: "{{pkg_file_tmp_dest}}"
+        - name: "Remove NodeJS package"
+          file:
+            state: absent
+            path: "{{pkg_file_tmp_dest}}"
+      when: installed.stat.exists == false or version_correct.rc == 1
