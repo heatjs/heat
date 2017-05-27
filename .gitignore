@@ -1,4 +1,6 @@
+# Ansible stuff
 resources/scripts/installers/ansible/*.tar.gz
+*.retry
 
 # SSL Folder
 data/ssl/*

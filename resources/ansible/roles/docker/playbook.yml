@@ -1,5 +1,5 @@
 ---
-- hosts: all
+- hosts: docker
   vars:
     pkg_name: docker-ce
     apt_key_url: https://download.docker.com/linux/ubuntu/gpg

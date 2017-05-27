@@ -7,8 +7,9 @@
     pkg_version: 7.10.0
     version: "{{pkg_version}}-###{{playbook_version}}###"
     version_file: "{{install_path}}VERSION"
-    pkg_file: "node-v{{pkg_version}}-linux-x64.tar.xz"
-    pkg_file_tmp_dest: "/tmp/{{pkg_file}}"
+    unpacked_folder: "node-v{{pkg_version}}-linux-x64"
+    pkg_file: "{{unpacked_folder}}.tar.xz"
+    pkg_file_tmp_dest: "/tmp/nodejs/"
   tasks:
     - name: "Check if already installed"
       stat:
@@ -24,21 +25,49 @@
     - debug: msg="{{ version_correct.rc }}"
     - block:
         - name: "Removing old version"
+          become: true
           file:
             state: absent
             path: "{{install_path}}"
-      when: installed.stat.exists == true and version_correct.rc == 1
+      when: installed.stat.exists == true and version_correct.rc != 0
     - block:
         - name: "The file name is:"
           command: "echo {{ pkg_file }}"
           register: "result"
         - debug: msg="{{ result.stdout }}"
-        - name: "Copy NodeJS package to server"
-          copy:
+        - name: "Create temporary folder"
+          file:
+            path: "{{pkg_file_tmp_dest}}"
+            state: directory
+            mode: 0755
+        - name: "Copy and unpack NodeJS package to server"
+          unarchive:
             src: "./{{pkg_file}}"
             dest: "{{pkg_file_tmp_dest}}"
-        - name: "Remove NodeJS package"
+        - name: "Move new files to install location"
+          become: true
+          command: mv {{pkg_file_tmp_dest}}{{unpacked_folder}} {{install_path}}
+        - name: "Remove temp folder"
           file:
             state: absent
             path: "{{pkg_file_tmp_dest}}"
-      when: installed.stat.exists == false or version_correct.rc == 1
+        - name: "Update version file"
+          become: true
+          shell: "echo {{version}} > {{version_file}}"
+          register: "result"
+        - debug: msg="{{ result }}"
+      when: installed.stat.exists == false or version_correct.rc != 0
+    - block:
+        - name: Create symlink for node
+          become: true
+          file:
+            state: link
+            src: "{{install_path}}bin/node"
+            dest: /usr/local/bin/node
+        - name: Create symlink for npm
+          become: true
+          file:
+            state: link
+            src: "{{install_path}}bin/npm"
+            dest: /usr/local/bin/npm
+      when: installed.stat.exists == false

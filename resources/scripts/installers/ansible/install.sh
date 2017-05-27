@@ -3,15 +3,18 @@
 # Source of tarball: https://github.com/ansible/ansible/releases
 
 # Several settings
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >>/dev/null && pwd )"
-TMP_DIR="${DIR}/tmp/"
-SCRIPT_VERSION=2
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >>/dev/null && pwd )/"
+TMP_DIR="${DIR}tmp/"
+SCRIPT_VERSION=1
 ANSIBLE_VERSION=2.3.0.0-1
 VERSION="${ANSIBLE_VERSION}-###${SCRIPT_VERSION}###"
 INSTALL_PATH="/opt/ansible/"
+CONFIG_PATH="/etc/ansible/"
 VERSION_FILE="${INSTALL_PATH}VERSION"
 ANSIBLE_FOLDER="ansible-${ANSIBLE_VERSION}"
 SOURCE_CMD="source ${INSTALL_PATH}hacking/env-setup &>/dev/null"
+PKG_FILE="${ANSIBLE_FOLDER}.tar.gz"
+DOWNLOAD_URL="https://github.com/ansible/ansible/archive/v${ANSIBLE_VERSION}.tar.gz"
 
 if [ -d $INSTALL_PATH ]; then
   if [ -f $VERSION_FILE ]; then
@@ -28,18 +31,28 @@ else
   echo "Installing"
 fi
 
+if [ ! -f "${DIR}${PKG_FILE}" ]; then
+  echo "Downloading"
+  curl -L -o "${DIR}${PKG_FILE}" ${DOWNLOAD_URL}
+fi
+
+if [ ! -f "${DIR}${PKG_FILE}" ]; then
+  echo "Download of ${DOWNLOAD_URL} failed!"
+  exit
+fi
+
 # Remove old versions
 rm -f /usr/local/bin/ansible*
 rm -rf $INSTALL_PATH
 
 # Install new
 mkdir -p $TMP_DIR
-mkdir -p /etc/ansible
-tar -xzf "${DIR}/${ANSIBLE_FOLDER}.tar.gz" -C $TMP_DIR
+mkdir -p $CONFIG_PATH
+tar -xzf "${DIR}${PKG_FILE}" -C $TMP_DIR
 mv "${TMP_DIR}${ANSIBLE_FOLDER}" "/opt"
 mv "/opt/${ANSIBLE_FOLDER}" $INSTALL_PATH
 
-cp -pr ${DIR}/config/* "/etc/ansible"
+cp -pr ${DIR}config/* $CONFIG_PATH
 
 # Install requirements
 apt-get update
@@ -69,3 +82,5 @@ rmdir $TMP_DIR
 
 # Add version file
 echo "${VERSION}" >> "${VERSION_FILE}"
+
+eval $SOURCE_CMD

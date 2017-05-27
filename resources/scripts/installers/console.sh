@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >>/dev/null && pwd )"
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >>/dev/null && pwd )/"
 
 if [ $DIR = "/tmp" ]; then
   echo "THIS IS VAGRANT!"
@@ -12,7 +12,10 @@ else
   apt-get install python -y
 
   # Ansible
-  ${DIR}/ansible/install.sh
+  ${DIR}ansible/install.sh
+
+  # Install nodejs
+  /bin/bash -c -i -l "ansible-playbook ${DIR}../../ansible/roles/nodejs/playbook.yml"
 fi
 
 
